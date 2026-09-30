@@ -1,0 +1,24 @@
+operator:
+  name: "Example Cocoa Cooperative Ltd"
+  reference: "OP-2026-000123"
+
+commodity: cocoa
+
+region: "Western North Region, Ghana"
+
+cutoff_date: 2020-12-31
+
+risk_thresholds:
+  red_min_pct: 1.0
+  amber_min_pct: 1.0
+
+dataset:
+  forest_loss_source: "Hansen Global Forest Change v1.11 (2023 release)"
+  imagery_source: "Sentinel-2 SR Harmonized, 2024 composite"
+
+input:
+  results_csv: "data/eudr_screening_results.csv"
+  plots_geojson: "data/eudr_plots.geojson"
+
+output:
+  report_path: "output/eudr_dds_report.pdf"
