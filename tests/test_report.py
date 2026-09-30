@@ -2,7 +2,8 @@ from datetime import date
 
 from eudr_screening.config import Config, DatasetInfo, InputPaths, OperatorInfo, OutputPaths
 from eudr_screening.data import ClassificationMismatch, PlotRecord
-from eudr_screening.report import build_report_context
+from eudr_screening.map import render_overview_map
+from eudr_screening.report import build_report_context, render_pdf
 from eudr_screening.risk import RiskThresholds
 
 _CONFIG = Config(
@@ -79,3 +80,17 @@ def test_build_report_context_passes_mismatches_through():
     assert context["mismatches"] == [
         {"plot_id": 1, "loss_pct": 0.0, "risk_flag_source": "RED", "risk_flag_computed": "GREEN"}
     ]
+
+
+def test_render_pdf_writes_valid_pdf_file(tmp_path):
+    records = [_record(1, "GREEN"), _record(3, "RED", loss_pct=12.0)]
+    context = build_report_context(_CONFIG, records, mismatches=[])
+    map_png = render_overview_map(records)
+    output_path = tmp_path / "report.pdf"
+
+    render_pdf(context, map_png, str(output_path))
+
+    assert output_path.exists()
+    assert output_path.stat().st_size > 1000
+    with open(output_path, "rb") as f:
+        assert f.read(5) == b"%PDF-"
