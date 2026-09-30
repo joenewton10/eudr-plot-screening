@@ -5,6 +5,7 @@ from reportlab.lib import colors
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.units import cm
+from reportlab.lib.utils import ImageReader
 from reportlab.platypus import Image, Paragraph, SimpleDocTemplate, Spacer, Table, TableStyle
 
 from eudr_screening.config import Config
@@ -83,6 +84,15 @@ def build_report_context(
     }
 
 
+def _fit_within(
+    max_width: float, max_height: float, natural_width: float, natural_height: float
+) -> tuple[float, float]:
+    """Scale (natural_width, natural_height) to fit within (max_width, max_height),
+    preserving aspect ratio rather than stretching to fill the box."""
+    scale = min(max_width / natural_width, max_height / natural_height)
+    return natural_width * scale, natural_height * scale
+
+
 def render_pdf(context: dict, map_png: bytes, output_path: str) -> None:
     """Render the report context and map image into a PDF at output_path."""
     styles = getSampleStyleSheet()
@@ -119,7 +129,9 @@ def render_pdf(context: dict, map_png: bytes, output_path: str) -> None:
     story.append(Spacer(1, 0.5 * cm))
 
     story.append(Paragraph("Plot overview map", styles["Heading2"]))
-    story.append(Image(io.BytesIO(map_png), width=14 * cm, height=14 * cm))
+    map_width_px, map_height_px = ImageReader(io.BytesIO(map_png)).getSize()
+    image_width, image_height = _fit_within(14 * cm, 14 * cm, map_width_px, map_height_px)
+    story.append(Image(io.BytesIO(map_png), width=image_width, height=image_height))
     story.append(Spacer(1, 0.5 * cm))
 
     story.append(Paragraph("Plot detail", styles["Heading2"]))

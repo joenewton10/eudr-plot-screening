@@ -1,9 +1,11 @@
 from datetime import date
 
+from reportlab.lib.units import cm
+
 from eudr_screening.config import Config, DatasetInfo, InputPaths, OperatorInfo, OutputPaths
 from eudr_screening.data import ClassificationMismatch, PlotRecord
 from eudr_screening.map import render_overview_map
-from eudr_screening.report import build_report_context, render_pdf
+from eudr_screening.report import _fit_within, build_report_context, render_pdf
 from eudr_screening.risk import RiskThresholds
 
 _CONFIG = Config(
@@ -80,6 +82,23 @@ def test_build_report_context_passes_mismatches_through():
     assert context["mismatches"] == [
         {"plot_id": 1, "loss_pct": 0.0, "risk_flag_source": "RED", "risk_flag_computed": "GREEN"}
     ]
+
+
+def test_fit_within_preserves_aspect_ratio_and_bounds():
+    # The real overview map renders at 832x512 px (1.625:1) — a non-square PNG
+    # forced into a 14cm x 14cm box would distort the plot polygons.
+    width, height = _fit_within(14 * cm, 14 * cm, 832, 512)
+
+    assert abs((width / height) - (832 / 512)) < 1e-9
+    assert width <= 14 * cm + 1e-9
+    assert height <= 14 * cm + 1e-9
+
+
+def test_fit_within_scales_up_a_square_image_to_fill_the_box():
+    width, height = _fit_within(100, 100, 50, 50)
+
+    assert width == 100
+    assert height == 100
 
 
 def test_render_pdf_writes_valid_pdf_file(tmp_path):

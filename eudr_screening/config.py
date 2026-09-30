@@ -52,20 +52,34 @@ _REQUIRED_TOP_LEVEL_KEYS = (
 )
 
 
+def _require_mapping(value, name: str) -> dict:
+    if not isinstance(value, dict):
+        raise ConfigError(f"config.yaml {name} must be a mapping")
+    return value
+
+
 def load_config(path: str) -> Config:
     """Load and validate config.yaml into a Config."""
-    raw = yaml.safe_load(Path(path).read_text())
+    try:
+        raw = yaml.safe_load(Path(path).read_text())
+    except yaml.YAMLError as exc:
+        raise ConfigError(f"config.yaml is not valid YAML: {exc}") from exc
+
+    raw = _require_mapping(raw, "must be a mapping of top-level keys (got an empty or invalid document)")
 
     for key in _REQUIRED_TOP_LEVEL_KEYS:
         if key not in raw:
             raise ConfigError(f"config.yaml is missing required key: {key!r}")
 
-    operator_raw = raw["operator"]
+    operator_raw = _require_mapping(raw["operator"], "operator")
     for key in ("name", "reference"):
         if not operator_raw.get(key):
             raise ConfigError(f"config.yaml operator.{key} must be a non-empty string")
 
-    thresholds_raw = raw["risk_thresholds"]
+    thresholds_raw = _require_mapping(raw["risk_thresholds"], "risk_thresholds")
+    for key in ("red_min_pct", "amber_min_pct"):
+        if key not in thresholds_raw:
+            raise ConfigError(f"config.yaml risk_thresholds is missing required key: {key!r}")
     try:
         red_min_pct = float(thresholds_raw["red_min_pct"])
         amber_min_pct = float(thresholds_raw["amber_min_pct"])
@@ -80,17 +94,17 @@ def load_config(path: str) -> Config:
             f"({red_min_pct}) must be greater than amber_min_pct ({amber_min_pct})"
         )
 
-    dataset_raw = raw["dataset"]
+    dataset_raw = _require_mapping(raw["dataset"], "dataset")
     for key in ("forest_loss_source", "imagery_source"):
         if not dataset_raw.get(key):
             raise ConfigError(f"config.yaml dataset.{key} must be a non-empty string")
 
-    input_raw = raw["input"]
+    input_raw = _require_mapping(raw["input"], "input")
     for key in ("results_csv", "plots_geojson"):
         if not input_raw.get(key):
             raise ConfigError(f"config.yaml input.{key} must be a non-empty string")
 
-    output_raw = raw["output"]
+    output_raw = _require_mapping(raw["output"], "output")
     if not output_raw.get("report_path"):
         raise ConfigError("config.yaml output.report_path must be a non-empty string")
 

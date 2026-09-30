@@ -32,3 +32,23 @@ def test_load_config_bad_threshold_order_raises():
 def test_load_config_non_numeric_threshold_raises():
     with pytest.raises(ConfigError, match="risk_thresholds"):
         load_config(f"{FIXTURES}/non_numeric_thresholds_config.yaml")
+
+
+def test_load_config_empty_file_raises():
+    with pytest.raises(ConfigError, match="mapping"):
+        load_config(f"{FIXTURES}/empty_config.yaml")
+
+
+def test_load_config_invalid_yaml_syntax_raises():
+    with pytest.raises(ConfigError, match="not valid YAML"):
+        load_config(f"{FIXTURES}/invalid_syntax_config.yaml")
+
+
+def test_load_config_missing_threshold_key_raises():
+    with pytest.raises(ConfigError, match="amber_min_pct"):
+        load_config(f"{FIXTURES}/missing_threshold_key_config.yaml")
+
+
+def test_load_config_operator_wrong_type_raises():
+    with pytest.raises(ConfigError, match="operator"):
+        load_config(f"{FIXTURES}/operator_wrong_type_config.yaml")

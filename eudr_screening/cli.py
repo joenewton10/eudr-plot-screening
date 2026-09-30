@@ -23,7 +23,7 @@ def main(argv: list[str] | None = None) -> int:
         records, mismatches = build_plot_records(
             config.input.results_csv, config.input.plots_geojson, config.risk_thresholds
         )
-    except FileNotFoundError as exc:
+    except (FileNotFoundError, ValueError, KeyError) as exc:
         print(f"Error loading input data: {exc}", file=sys.stderr)
         return 2
 

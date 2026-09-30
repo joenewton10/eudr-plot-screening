@@ -69,6 +69,20 @@ def test_main_returns_nonzero_on_missing_input_data(tmp_path, capsys):
     assert "Error loading input data" in captured.err
 
 
+def test_main_returns_nonzero_on_orphan_plot_id(tmp_path, capsys):
+    output_path = tmp_path / "report.pdf"
+    config_yaml = _write_config(
+        tmp_path, output_path, results_csv="tests/fixtures/orphan_plot_results.csv"
+    )
+
+    exit_code = main(["--config", str(config_yaml)])
+
+    assert exit_code == 2
+    captured = capsys.readouterr()
+    assert "Error loading input data" in captured.err
+    assert "99" in captured.err
+
+
 def test_main_returns_nonzero_on_empty_results_csv(tmp_path, capsys):
     empty_csv = tmp_path / "empty_results.csv"
     empty_csv.write_text("plot_id,plot_area_ha,loss_after_2020_ha,loss_pct,risk_flag\n")
