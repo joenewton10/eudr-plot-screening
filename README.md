@@ -12,7 +12,8 @@ unit-tested report.
 ![Sample DDS-style report: operator details, scope note, risk summary, plot overview map, and per-plot detail table](docs/report_sample.png)
 
 *Generated from the demo dataset in `data/` — 3 of 6 plots flagged RED for
-post-2020 forest loss, each with a mitigation-or-exclusion notice.*
+post-2020 forest loss, each with a mitigation-or-exclusion notice.
+[Full sample report (PDF)](docs/sample_report.pdf).*
 
 ## How it works
 
