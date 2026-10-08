@@ -9,6 +9,11 @@ Built as a two-stage pipeline: Google Earth Engine does the geospatial
 analysis, Python turns the exported results into a config-driven,
 unit-tested report.
 
+![Sample DDS-style report: operator details, scope note, risk summary, plot overview map, and per-plot detail table](docs/report_sample.png)
+
+*Generated from the demo dataset in `data/` — 3 of 6 plots flagged RED for
+post-2020 forest loss, each with a mitigation-or-exclusion notice.*
+
 ## How it works
 
 1. **Earth Engine (`gee/eudr_screening.js`)** — for each operator-drawn
