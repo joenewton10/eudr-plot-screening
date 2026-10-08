@@ -36,13 +36,14 @@ swapping the plot input — commodity is never hard-coded into the logic.
 
 ## Scope and limitations
 
-This is a screening tool for the deforestation-risk question only. It is
-**not** a legality or traceability check, and it is **not** a legal Due
-Diligence Statement under EUDR. It relies on a 30 m global dataset (Hansen
+1. This is a screening tool for the deforestation-risk question only.
+2. It is **not** a legality or traceability check, and it is **not** a legal Due
+Diligence Statement under EUDR.
+3. It relies on a 30 m global dataset (Hansen
 Global Forest Change), which misses sub-hectare clearance and can
 mis-measure loss near plot edges. Cocoa agroforestry frequently reads as
-canopy cover from space — this is exactly why EUDR requires
-operator-supplied GPS polygons rather than remote farm detection: this
+canopy cover from space — this is exactly why **EUDR requires
+operator-supplied GPS polygons** rather than remote farm detection: this
 tool screens the polygon an operator provides, it does not find farms on
 its own.
 
